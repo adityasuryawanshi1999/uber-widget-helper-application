@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,15 @@ export default function UberWidgetApp() {
     dropoff: "",
   });
   const [selectedCabService, setSelectedCabService] = useState("option1");
+  const [queryPickup, setQueryPickup] = useState("");
+  const [queryDroppoff, setQueryDropoff] = useState("");
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
+  const [dropoffSuggestions, setDropoffSuggestions] = useState([]);
+  const typingTimeout = useRef(null); // holds timeout id
+  const [selectionPickupText, setSelectionPickupText] = useState(null);
+  const [selectionDropoffText, setSelectionDropoffText] = useState(null);
+  const pickupTextRef = useRef(null);
+  const dropoffTextRef = useRef(null);
 
   useEffect(() => {
     loadWidgets();
@@ -58,6 +67,8 @@ export default function UberWidgetApp() {
     const newList = [...widgets, newWidget];
     saveWidgets(newList);
     setNewWidget({ name: "", pickup: "", dropoff: "" });
+    setQueryDropoff("");
+    setQueryPickup("");
   };
 
   const deleteShortcut = (index) => {
@@ -101,6 +112,107 @@ export default function UberWidgetApp() {
     });
   };
 
+  const fetchLocations = async (text, field) => {
+    if (field === "pickup") {
+      setQueryPickup(text);
+    } else {
+      setQueryDropoff(text);
+    }
+    if (text.length < 3) {
+      if (field === "pickup") {
+        setPickupSuggestions([]);
+      } else {
+        setDropoffSuggestions([]);
+      }
+      return;
+    }
+
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+        text
+      )}&limit=5`;
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": "my-expo-app", // required
+          "Accept-Language": "en", // optional
+        },
+      });
+      const data = await response.json();
+      if (field === "pickup") {
+        setPickupSuggestions(data);
+      } else {
+        setDropoffSuggestions(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSelect = (item, field) => {
+    if (field === "pickup") {
+      setQueryPickup(item.display_name);
+      setPickupSuggestions([]);
+    } else {
+      setQueryDropoff(item.display_name);
+      setDropoffSuggestions([]);
+    }
+    const lat = parseFloat(item.lat);
+    const lon = parseFloat(item.lon);
+    if (field === "pickup") {
+      setNewWidget({ ...newWidget, pickup: lat + "," + lon });
+    } else {
+      setNewWidget({ ...newWidget, dropoff: lat + "," + lon });
+    }
+  };
+
+  const handlePickupTextChange = (text) => {
+    setQueryPickup(text);
+    // setPickupSuggestions([]);
+    // Clear previous timer
+    if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current);
+    }
+
+    // Wait 600ms after user stops typing
+    typingTimeout.current = setTimeout(() => {
+      fetchLocations(text, "pickup");
+    }, 600);
+    // setNewWidget({ ...newWidget, pickup: lat + "," + lon });
+  };
+
+  const handleDropoffTextChange = (text) => {
+    setQueryDropoff(text);
+
+    // Clear previous timer
+    if (typingTimeout.current) {
+      clearTimeout(typingTimeout.current);
+    }
+
+    // Wait 600ms after user stops typing
+    typingTimeout.current = setTimeout(() => {
+      fetchLocations(text, "dropoff");
+    }, 600);
+  };
+
+  const handleBlur = (field) => {
+    // Set cursor to the beginning on blur
+    if (field === "pickup") {
+      if (pickupTextRef.current) setSelectionPickupText({ start: 0, end: 0 });
+    } else {
+      if (dropoffTextRef.current) setSelectionPickupText({ start: 0, end: 0 });
+    }
+  };
+
+  const handleFocus = (field) => {
+    // Reset the selection state so the user can move the cursor normally
+    // after re-focusing.
+    if (field === "pickup") {
+      setSelectionPickupText(null);
+    } else {
+      setSelectionDropoffText(null);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Quick Routes 🚗</Text>
@@ -111,6 +223,62 @@ export default function UberWidgetApp() {
         onChangeText={(t) => setNewWidget({ ...newWidget, name: t })}
         style={styles.input}
       />
+
+      <View>
+        <TextInput
+          placeholder="Enter pickup location"
+          value={queryPickup}
+          onChangeText={handlePickupTextChange}
+          style={styles.input}
+          ref={pickupTextRef}
+          onBlur={() => handleBlur("pickup")}
+          onFocus={() => handleFocus("pickup")}
+          selection={selectionPickupText}
+        />
+        {pickupSuggestions.length > 0 && (
+          <FlatList
+            data={pickupSuggestions}
+            keyExtractor={(item) => item.place_id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.item}
+                onPress={() => handleSelect(item, "pickup")}
+              >
+                <Text>{item.display_name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
+
+      <View>
+        <TextInput
+          placeholder="Enter drop location"
+          value={queryDroppoff}
+          onChangeText={handleDropoffTextChange}
+          style={styles.input}
+          ref={dropoffTextRef}
+          onBlur={() => handleBlur("dropoff")}
+          onFocus={() => handleFocus("dropoff")}
+          selection={selectionDropoffText}
+        />
+        {dropoffSuggestions.length > 0 && (
+          <FlatList
+            data={dropoffSuggestions}
+            keyboardShouldPersistTaps="always"
+            keyExtractor={(item) => item.place_id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.item}
+                onPress={() => handleSelect(item, "dropoff")}
+              >
+                <Text>{item.display_name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
+
       <TextInput
         placeholder="Pickup (lat,lng)"
         value={newWidget.pickup}
@@ -273,5 +441,13 @@ const styles = StyleSheet.create({
     marginLeft: 8, // Space between radio button and label
     fontSize: 16, // Font size for the label
     color: "#333", // Dark gray color for the label
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    // backgroundColor: "#fff",
+    backgroundColor: "grey",
+    marginBottom: 5,
   },
 });
