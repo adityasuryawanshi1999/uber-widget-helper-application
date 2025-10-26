@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RadioButton } from "react-native-paper";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function UberWidgetApp() {
   const [widgets, setWidgets] = useState([]);
@@ -102,7 +103,7 @@ export default function UberWidgetApp() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Uber Shortcuts 🚗</Text>
+      <Text style={styles.title}>Quick Routes 🚗</Text>
 
       <TextInput
         placeholder="Shortcut Name"
@@ -123,7 +124,6 @@ export default function UberWidgetApp() {
         style={styles.input}
       />
       <Button title="Add Shortcut" onPress={addWidget} />
-
       <View style={styles.radioContainer}>
         <View style={styles.radioGroup}>
           {/* First radio button for ReactJS */}
@@ -157,7 +157,6 @@ export default function UberWidgetApp() {
       <FlatList
         data={widgets}
         keyExtractor={(item, index) => index.toString()}
-        // style={{ marginTop: 8 }}
         renderItem={({ item, index }) => (
           <View style={styles.shortcutContainer}>
             <View style={styles.eightyPercent}>
@@ -173,7 +172,13 @@ export default function UberWidgetApp() {
                 style={styles.deleteBtn}
                 onPress={() => deleteShortcut(index)}
               >
-                <Text>Delete</Text>
+                {/* <Text>Delete</Text> */}
+                <MaterialIcons
+                  name="delete"
+                  size={30}
+                  color="white"
+                  style={{ textAlign: "center" }}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -187,9 +192,10 @@ const styles = StyleSheet.create({
   shortcutContainer: {
     // marginTop: 5,
     // marginBottom: 5,
+    flex: 1,
     flexDirection: "row", // arrange children horizontally
     width: "100%",
-    height: 100,
+    height: 70,
     alignItems: "center",
     // paddingTop: 10,
   },
@@ -200,7 +206,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   container: { flex: 1, padding: 20, backgroundColor: "#f9fafc" },
-  title: { fontSize: 24, fontWeight: "700", marginBottom: 10, paddingTop: 30 },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 10,
+    paddingTop: 30,
+    marginTop: 20,
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -226,12 +238,13 @@ const styles = StyleSheet.create({
     // backgroundColor: "salmon",
   },
   radioContainer: {
-    // marginTop: 20,
+    marginTop: 10,
     // marginBottom: 20,
-    // // flex: 1, // Take up the full screen
+    // flex: 1, // Take up the full screen
     // backgroundColor: "#F5F5F5", // Light gray background
     // justifyContent: "space-around", // Center content vertically
     // alignItems: "center", // Center content horizontally
+    height: 70,
   },
   radioGroup: {
     flex: 1,
