@@ -219,6 +219,7 @@ export default function UberWidgetApp() {
 
       <TextInput
         placeholder="Shortcut Name"
+        placeholderTextColor="black"
         value={newWidget.name}
         onChangeText={(t) => setNewWidget({ ...newWidget, name: t })}
         style={styles.input}
@@ -227,6 +228,7 @@ export default function UberWidgetApp() {
       <View>
         <TextInput
           placeholder="Enter pickup location"
+          placeholderTextColor="black"
           value={queryPickup}
           onChangeText={handlePickupTextChange}
           style={styles.input}
@@ -254,6 +256,7 @@ export default function UberWidgetApp() {
       <View>
         <TextInput
           placeholder="Enter drop location"
+          placeholderTextColor="black"
           value={queryDroppoff}
           onChangeText={handleDropoffTextChange}
           style={styles.input}
@@ -281,12 +284,14 @@ export default function UberWidgetApp() {
 
       <TextInput
         placeholder="Pickup (lat,lng)"
+        placeholderTextColor="black"
         value={newWidget.pickup}
         onChangeText={(t) => setNewWidget({ ...newWidget, pickup: t })}
         style={styles.input}
       />
       <TextInput
         placeholder="Dropoff (lat,lng)"
+        placeholderTextColor="black"
         value={newWidget.dropoff}
         onChangeText={(t) => setNewWidget({ ...newWidget, dropoff: t })}
         style={styles.input}

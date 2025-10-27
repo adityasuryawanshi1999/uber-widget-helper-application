@@ -5,7 +5,7 @@ npx expo start
 
 To build android apk:
 
-1.  Delete existing android folder in root directory.
-2.  run 'npx expo prebuild'
-3.  Open newly created android directory in Android Studio.
-4.  Inside Android Studio → Build > Build Bundle(s)/APK(s) > Build APK(s)
+1.  Delete existing eas.jon folder in root directory
+2.  run 'eas login' and login, skip login if already done
+3.  run 'eas build:configure'
+4.  run 'eas build -platform android --profile preview
