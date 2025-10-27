@@ -46,6 +46,18 @@ export default function UberWidgetApp() {
     await AsyncStorage.setItem("widgets", JSON.stringify(newList));
   };
 
+  const clearAllFields = () => {
+    setQueryPickup("");
+    setQueryDropoff("");
+    setDropoffSuggestions([]);
+    setPickupSuggestions([]);
+    setNewWidget({
+      name: "",
+      pickup: "",
+      dropoff: "",
+    });
+  };
+
   const addWidget = () => {
     if (!newWidget.name || !newWidget.pickup || !newWidget.dropoff) {
       Alert.alert("Error", "Please fill all fields.");
@@ -296,7 +308,34 @@ export default function UberWidgetApp() {
         onChangeText={(t) => setNewWidget({ ...newWidget, dropoff: t })}
         style={styles.input}
       />
-      <Button title="Add Shortcut" onPress={addWidget} />
+      <View
+        style={{
+          //   flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View style={styles.eightyPercentWithMargin}>
+          <Button title="Add Shortcut" onPress={addWidget} />
+        </View>
+        <View style={styles.twentyPercent}>
+          {/* <Button title="Clear" onPress={clearAllFields} /> */}
+          <TouchableOpacity
+            onPress={clearAllFields}
+            style={{
+              backgroundColor: "#636363",
+              flex: 1,
+              borderRadius: 8,
+            }}
+          >
+            <Text
+              style={[{ color: "white", textAlign: "center", margin: "auto" }]}
+            >
+              CLEAR
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <View style={styles.radioContainer}>
         <View style={styles.radioGroup}>
           {/* First radio button for ReactJS */}
@@ -409,6 +448,10 @@ const styles = StyleSheet.create({
   twentyPercent: {
     flex: 2, // 2 / (8+2) = 20%
     // backgroundColor: "salmon",
+  },
+  eightyPercentWithMargin: {
+    flex: 8, // 8 / (8+2) = 80%
+    marginRight: 5,
   },
   radioContainer: {
     marginTop: 10,
