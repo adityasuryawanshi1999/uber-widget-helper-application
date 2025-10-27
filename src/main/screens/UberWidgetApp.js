@@ -9,6 +9,7 @@ import {
   Linking,
   Alert,
   StyleSheet,
+  StatusBar,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RadioButton } from "react-native-paper";
@@ -248,6 +249,7 @@ export default function UberWidgetApp() {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f9fafc" />
       <Text style={styles.title}>Quick Routes 🚗</Text>
 
       <TextInput
@@ -459,7 +461,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 10,
     paddingTop: 30,
-    marginTop: 20,
+    marginTop: 10,
   },
   input: {
     borderWidth: 1,
