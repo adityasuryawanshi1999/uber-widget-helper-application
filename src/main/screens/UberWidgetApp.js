@@ -460,8 +460,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     marginBottom: 10,
-    paddingTop: 30,
-    marginTop: 10,
+    // paddingTop: 30,
+    // marginTop: 10,
   },
   input: {
     borderWidth: 1,
