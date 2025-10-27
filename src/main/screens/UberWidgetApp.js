@@ -94,27 +94,18 @@ export default function UberWidgetApp() {
     return !isNaN(parts[0]) && !isNaN(parts[1]);
   };
 
-  const openCabApp = (pickup, dropoff, label) => {
+  const openUberApp = (pickup, dropoff, label) => {
     const [plat, plon] = pickup.split(",").map(Number);
     const [dlat, dlon] = dropoff.split(",").map(Number);
     let url = ``;
 
-    if (selectedCabService === "option1") {
-      // Construct Uber deep link
-      url =
-        `uber://?action=setPickup` +
-        `&pickup[latitude]=${plat}` +
-        `&pickup[longitude]=${plon}` +
-        `&dropoff[latitude]=${dlat}` +
-        `&dropoff[longitude]=${dlon}` +
-        `&dropoff[nickname]=${encodeURIComponent(label || "Destination")}`;
-    } else {
-      url =
-        `olacabs://app/launch?lat=${plat}` +
-        `&lng=${plon}` +
-        `&drop_lat=${dlat}` +
-        `&drop_lng=${dlon}`;
-    }
+    url =
+      `uber://?action=setPickup` +
+      `&pickup[latitude]=${plat}` +
+      `&pickup[longitude]=${plon}` +
+      `&dropoff[latitude]=${dlat}` +
+      `&dropoff[longitude]=${dlon}` +
+      `&dropoff[nickname]=${encodeURIComponent(label || "Destination")}`;
 
     Linking.openURL(url).catch(() => {
       Alert.alert(
@@ -122,6 +113,36 @@ export default function UberWidgetApp() {
         "Please install the app to use this shortcut."
       );
     });
+  };
+
+  const openOlaApp = (pickup, dropoff, label) => {
+    const [plat, plon] = pickup.split(",").map(Number);
+    const [dlat, dlon] = dropoff.split(",").map(Number);
+    let url = ``;
+
+    url =
+      `olacabs://app/launch?lat=${plat}` +
+      `&lng=${plon}` +
+      `&drop_lat=${dlat}` +
+      `&drop_lng=${dlon}`;
+
+    Linking.openURL(url).catch(() => {
+      Alert.alert(
+        "Cab service App not found",
+        "Please install the app to use this shortcut."
+      );
+    });
+  };
+
+  const openCabApps = (pickup, dropoff, label) => {
+    if (selectedCabService === "option1") {
+      openUberApp(pickup, dropoff, label);
+    } else if (selectedCabService === "option2") {
+      openOlaApp(pickup, dropoff, label);
+    } else {
+      openUberApp(pickup, dropoff, label);
+      openOlaApp(pickup, dropoff, label);
+    }
   };
 
   const fetchLocations = async (text, field) => {
@@ -363,6 +384,19 @@ export default function UberWidgetApp() {
             />
             <Text style={styles.radioLabel}>Ola</Text>
           </View>
+
+          {/* Second radio button for NextJs */}
+          <View style={styles.radioButton}>
+            <RadioButton.Android
+              value="option3"
+              status={
+                selectedCabService === "option3" ? "checked" : "unchecked"
+              }
+              onPress={() => setSelectedCabService("option3")}
+              color="#007BFF" // Custom color for the radio button
+            />
+            <Text style={styles.radioLabel}>Both</Text>
+          </View>
         </View>
       </View>
 
@@ -374,7 +408,9 @@ export default function UberWidgetApp() {
             <View style={styles.eightyPercent}>
               <TouchableOpacity
                 style={styles.shortcut}
-                onPress={() => openCabApp(item.pickup, item.dropoff, item.name)}
+                onPress={() =>
+                  openCabApps(item.pickup, item.dropoff, item.name)
+                }
               >
                 <Text style={styles.shortcutText}>{item.name}</Text>
               </TouchableOpacity>
