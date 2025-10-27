@@ -211,7 +211,7 @@ export default function UberWidgetApp() {
     if (field === "pickup") {
       if (pickupTextRef.current) setSelectionPickupText({ start: 0, end: 0 });
     } else {
-      if (dropoffTextRef.current) setSelectionPickupText({ start: 0, end: 0 });
+      if (dropoffTextRef.current) setSelectionDropoffText({ start: 0, end: 0 });
     }
   };
 
