@@ -455,7 +455,12 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     borderRadius: 8,
   },
-  container: { flex: 1, padding: 20, backgroundColor: "#f9fafc" },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#f9fafc",
+    marginTop: 30,
+  },
   title: {
     fontSize: 24,
     fontWeight: "700",
